@@ -20,7 +20,7 @@ const Navbar = () => {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8 font-semibold text-gray-700">
           <Link to="/" className="relative group transition">
-            <span className="hover:text-yellow-700 transition">Home</span>
+            <span className="hover:text-yellow-700 transition"> Home </span>
             <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-yellow-600 transition-all group-hover:w-full"></span>
           </Link>
           <Link to="/browse" className="relative group transition">
