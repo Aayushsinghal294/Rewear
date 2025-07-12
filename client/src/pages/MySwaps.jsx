@@ -7,33 +7,16 @@ const MySwaps = () => {
   const [swaps, setSwaps] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Replace with actual API call
   useEffect(() => {
     if (!user) return;
-    // Simulate API call
-    setTimeout(() => {
-      setSwaps([
-        {
-          _id: 'swap1',
-          itemTitle: 'Vintage Denim Jacket',
-          itemImage: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5e?w=400',
-          status: 'completed',
-          partner: 'summergirl',
-          date: '2024-06-01',
-          points: 150,
-        },
-        {
-          _id: 'swap2',
-          itemTitle: 'Designer Sneakers',
-          itemImage: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400',
-          status: 'pending',
-          partner: 'sneakerhead',
-          date: '2024-06-10',
-          points: 200,
-        },
-      ]);
-      setLoading(false);
-    }, 1000);
+    setLoading(true);
+    fetch(`http://localhost:5000/api/swaps/user/${user.id}`)
+      .then(res => res.json())
+      .then(data => {
+        setSwaps(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [user]);
 
   return (
@@ -55,17 +38,17 @@ const MySwaps = () => {
             {swaps.map((swap) => (
               <div key={swap._id} className="bg-white rounded-lg shadow p-6 flex items-center gap-6">
                 <img
-                  src={swap.itemImage}
-                  alt={swap.itemTitle}
+                  src={swap.itemImage || (swap.item && swap.item.images && swap.item.images[0]) || '/placeholder.jpg'}
+                  alt={swap.itemTitle || (swap.item && swap.item.title) || 'Item'}
                   className="w-24 h-24 object-cover rounded-lg border"
                 />
                 <div className="flex-1">
-                  <h2 className="text-xl font-bold text-gray-800">{swap.itemTitle}</h2>
+                  <h2 className="text-xl font-bold text-gray-800">{swap.itemTitle || (swap.item && swap.item.title)}</h2>
                   <div className="text-gray-600 text-sm mb-2">
-                    With <span className="font-semibold">{swap.partner}</span> &middot; {new Date(swap.date).toLocaleDateString()}
+                    With <span className="font-semibold">{swap.partner || swap.requester || swap.itemOwner}</span> &middot; {new Date(swap.date || swap.createdAt).toLocaleDateString()}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-yellow-600 font-semibold">{swap.points} pts</span>
+                    <span className="text-yellow-600 font-semibold">{swap.points || swap.pointsValue || 0} pts</span>
                     <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
                       swap.status === 'completed'
                         ? 'bg-green-100 text-green-700'

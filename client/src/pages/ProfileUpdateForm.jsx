@@ -79,7 +79,7 @@ const ProfileUpdateForm = ({ onUpdated }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-teal-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-teal-50 py-12 px-4 mt-20">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
