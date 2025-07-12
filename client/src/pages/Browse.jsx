@@ -220,7 +220,7 @@ const Browse = () => {
 
         <div className="flex space-x-2">
           <Link
-            to={`/items/${item._id}`}
+            to={`/item/${item._id}`}
             className="flex-1 bg-yellow-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-yellow-700 transition-colors text-center"
           >
             View Details
