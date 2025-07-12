@@ -102,6 +102,7 @@ router.post('/', async (req, res) => {
 // Get user's items
 router.get('/user/:clerkId', async (req, res) => {
   try {
+    console.log('Fetching items for user:', req.params.clerkId);
     const items = await Item.find({ owner: req.params.clerkId })
       .sort({ createdAt: -1 });
     
