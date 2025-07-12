@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // MongoDB Connection with detailed logging
 const connectDB = async () => {
@@ -143,26 +144,3 @@ app.listen(PORT, () => {
   console.log(`📡 API available at: http://localhost:${PORT}`);
   console.log(`🔍 Health check: http://localhost:${PORT}/health`);
 });
-
-// ===== 4. ENVIRONMENT VARIABLES TEMPLATE =====
-/*
-Create a .env file in your backend root directory with:
-
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/rewear?retryWrites=true&w=majority
-PORT=5000
-JWT_SECRET=your-super-secret-jwt-key-here
-CLOUDINARY_CLOUD_NAME=your-cloudinary-name
-CLOUDINARY_API_KEY=your-cloudinary-api-key
-CLOUDINARY_API_SECRET=your-cloudinary-api-secret
-*/
-
-// ===== 5. PACKAGE.JSON SCRIPTS =====
-/*
-Add these scripts to your package.json:
-
-"scripts": {
-  "start": "node server.js",
-  "dev": "nodemon server.js",
-  "test": "node -e \"require('./server.js')\""
-}
-*/

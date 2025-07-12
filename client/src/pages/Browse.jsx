@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Heart, Eye, Star, X, ChevronDown } from 'lucide-react';
+import { itemAPI } from '../services/api';
 
 const Browse = () => {
   const [items, setItems] = useState([]);
@@ -18,107 +19,15 @@ const Browse = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({});
 
-  // Mock data - replace with actual API call
-  useEffect(() => {
-    const mockItems = [
-      {
-        _id: '1',
-        title: "Vintage Denim Jacket",
-        description: "Classic blue denim jacket in excellent condition",
-        category: "outerwear",
-        size: "M",
-        condition: "Like New",
-        pointsValue: 150,
-        images: ["https://images.unsplash.com/photo-1544966503-7cc5ac882d5e?w=400"],
-        owner: { username: "fashionista", rating: 4.8, profileImage: "https://images.unsplash.com/photo-1494790108755-2616b332c04c?w=50" },
-        likes: [1, 2, 3],
-        views: 45,
-        createdAt: "2024-01-15T10:30:00Z"
-      },
-      {
-        _id: '2',
-        title: "Floral Summer Dress",
-        description: "Beautiful floral print dress perfect for summer",
-        category: "dresses",
-        size: "S",
-        condition: "Good",
-        pointsValue: 120,
-        images: ["https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400"],
-        owner: { username: "summergirl", rating: 4.9, profileImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50" },
-        likes: [1, 2],
-        views: 32,
-        createdAt: "2024-01-14T15:20:00Z"
-      },
-      {
-        _id: '3',
-        title: "Designer Sneakers",
-        description: "Limited edition sneakers, barely worn",
-        category: "shoes",
-        size: "9",
-        condition: "Like New",
-        pointsValue: 200,
-        images: ["https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400"],
-        owner: { username: "sneakerhead", rating: 5.0, profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50" },
-        likes: [1, 2, 3, 4],
-        views: 78,
-        createdAt: "2024-01-13T09:15:00Z"
-      },
-      {
-        _id: '4',
-        title: "Cozy Knit Sweater",
-        description: "Soft wool sweater in neutral beige",
-        category: "tops",
-        size: "L",
-        condition: "Good",
-        pointsValue: 80,
-        images: ["https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400"],
-        owner: { username: "cozyfashion", rating: 4.7, profileImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=50" },
-        likes: [1, 2, 3],
-        views: 56,
-        createdAt: "2024-01-12T14:45:00Z"
-      },
-      {
-        _id: '5',
-        title: "Black Leather Boots",
-        description: "Stylish ankle boots in great condition",
-        category: "shoes",
-        size: "8",
-        condition: "Good",
-        pointsValue: 130,
-        images: ["https://images.unsplash.com/photo-1544966503-7cc5ac882d5e?w=400"],
-        owner: { username: "bootlover", rating: 4.6, profileImage: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=50" },
-        likes: [1, 2],
-        views: 41,
-        createdAt: "2024-01-11T11:30:00Z"
-      },
-      {
-        _id: '6',
-        title: "Silk Blouse",
-        description: "Elegant silk blouse in navy blue",
-        category: "tops",
-        size: "M",
-        condition: "Like New",
-        pointsValue: 90,
-        images: ["https://images.unsplash.com/photo-1571442463800-1337d7af9d2f?w=400"],
-        owner: { username: "silklover", rating: 4.8, profileImage: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=50" },
-        likes: [1],
-        views: 29,
-        createdAt: "2024-01-10T16:20:00Z"
-      }
-    ];
-    
-    setTimeout(() => {
-      setItems(mockItems);
-      setPagination({
-        currentPage: 1,
-        totalPages: 2,
-        totalItems: mockItems.length,
-        hasNext: true,
-        hasPrev: false
-      });
-      setLoading(false);
-    }, 1000);
-  }, [filters, sortBy, sortOrder, currentPage]);
+useEffect(() => {
+  setLoading(true);
+  itemAPI.getAllItems({ ...filters, sortBy, sortOrder, page: currentPage })
+    .then(res => {
+      setItems(res.data.items);
+      setPagination(res.data.pagination);
+    })
+    .finally(() => setLoading(false));
+}, [filters, sortBy, sortOrder, currentPage]);
 
   const categories = [
     { value: '', label: 'All Categories' },

@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import Browse from './pages/Browse'
 import MySwaps from './pages/MySwaps'
 import ListItem from './pages/ListItem'
+import ItemDetail from './pages/ItemDetail'
 
 const App = () => {
 
@@ -23,6 +24,7 @@ const isAdminRoute = useLocation().pathname.startsWith('/admin')
         <Route path="/browse" element={<Browse/>} />
         <Route path="/swaps" element={<MySwaps/>} />
         <Route path="/list-item" element={<ListItem/>} />
+        <Route path="/item/:id" element={<ItemDetail/>} />
       </Routes>
     </>
   )

@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { Upload, X, Plus, Camera, AlertCircle, Check } from 'lucide-react';
+import { Upload, X, Plus, AlertCircle, Check } from 'lucide-react';
+import { itemAPI } from '../services/api';
+import { useUser } from '@clerk/clerk-react';
+
+const CLOUDINARY_UPLOAD_PRESET = 'clothList'; // <-- Replace with your unsigned preset name
+const CLOUDINARY_CLOUD_NAME = 'dora42wml'; // <-- Your Cloudinary cloud name
 
 const ListItem = () => {
+  const { user } = useUser();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -154,19 +160,39 @@ const ListItem = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // CLOUDINARY UPLOAD FUNCTION
+  const uploadToCloudinary = async (file) => {
+    const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+    const res = await fetch(url, {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    if (!data.secure_url) throw new Error('Cloudinary upload failed');
+    return data.secure_url;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
     setLoading(true);
     try {
-      // Mock API call - replace with actual API integration
+      // Upload all images to Cloudinary and get URLs
+      const imageUrls = [];
+      for (const img of images) {
+        const url = await uploadToCloudinary(img.file);
+        imageUrls.push(url);
+      }
       const itemData = {
         ...formData,
-        images: images.map(img => img.preview),
-        owner: 'current-user-clerk-id'
+        images: imageUrls,
+        owner: user?.id || "unknown"
       };
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await itemAPI.createItem(itemData);
       setSuccess(true);
       setTimeout(() => {
         setFormData({
@@ -186,7 +212,7 @@ const ListItem = () => {
       }, 3000);
     } catch (error) {
       console.error('Error submitting item:', error);
-      setErrors({ submit: 'Failed to list item. Please try again.' });
+      setErrors({ submit: error.message || 'Failed to list item. Please try again.' });
     } finally {
       setLoading(false);
     }
