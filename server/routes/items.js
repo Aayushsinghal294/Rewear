@@ -69,6 +69,16 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/featured', async (req, res) => {
+  try {
+    // You can change the query to select "featured" items as you wish
+    const items = await Item.find().sort({ createdAt: -1 }).limit(4).populate('owner');
+    res.json({ items });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get single item by ID
 router.get('/:id', async (req, res) => {
   try {
@@ -98,6 +108,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 
 // Get user's items

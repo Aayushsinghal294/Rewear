@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star, Users, Shirt, Recycle, ArrowRight, Heart, Eye } from 'lucide-react';
+import { itemAPI } from '../services/api';
 
 const Home = () => {
   const [featuredItems, setFeaturedItems] = useState([]);
@@ -8,67 +9,21 @@ const Home = () => {
 
   // Mock featured items data - replace with actual API call
   useEffect(() => {
-    const mockItems = [
-      {
-        id: 1,
-        title: "Vintage Denim Jacket",
-        description: "Classic blue denim jacket in excellent condition",
-        category: "outerwear",
-        size: "M",
-        condition: "Like New",
-        pointsValue: 150,
-        images: ["https://images.unsplash.com/photo-1544966503-7cc5ac882d5e?w=400"],
-        owner: { username: "fashionista", rating: 4.8 },
-        likes: 12,
-        views: 45
-      },
-      {
-        id: 2,
-        title: "Floral Summer Dress",
-        description: "Beautiful floral print dress perfect for summer",
-        category: "dresses",
-        size: "S",
-        condition: "Good",
-        pointsValue: 120,
-        images: ["https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400"],
-        owner: { username: "summergirl", rating: 4.9 },
-        likes: 8,
-        views: 32
-      },
-      {
-        id: 3,
-        title: "Designer Sneakers",
-        description: "Limited edition sneakers, barely worn",
-        category: "shoes",
-        size: "9",
-        condition: "Like New",
-        pointsValue: 200,
-        images: ["https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400"],
-        owner: { username: "sneakerhead", rating: 5.0 },
-        likes: 24,
-        views: 78
-      },
-      {
-        id: 4,
-        title: "Cozy Knit Sweater",
-        description: "Soft wool sweater in neutral beige",
-        category: "tops",
-        size: "L",
-        condition: "Good",
-        pointsValue: 80,
-        images: ["https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400"],
-        owner: { username: "cozyfashion", rating: 4.7 },
-        likes: 15,
-        views: 56
+    const fetchFeaturedItems = async () => {
+      try {
+        // You can create a dedicated endpoint for featured items, or use your existing one with filters
+        // Example: GET /api/items/featured or GET /api/items?featured=true
+        const res = await fetch('http://localhost:5000/api/items/featured');
+        const data = await res.json();
+        setFeaturedItems(data.items || data); // adapt if your API returns { items: [...] }
+      } catch (error) {
+        setFeaturedItems([]);
+      } finally {
+        setLoading(false);
       }
-    ];
-    
-    setTimeout(() => {
-      setFeaturedItems(mockItems);
-      setLoading(false);
-    }, 1000);
+    };
+    fetchFeaturedItems();
   }, []);
-
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % featuredItems.length);
   };
@@ -149,10 +104,10 @@ const Home = () => {
                       <div className="grid md:grid-cols-2 gap-8 items-center bg-white rounded-2xl p-8 mx-4">
                         <div className="relative">
                           <img
-                            src={item.images[0]}
-                            alt={item.title}
-                            className="w-full h-80 object-cover rounded-xl"
-                          />
+  src={item.images && item.images.length > 0 ? item.images[0] : '/placeholder.jpg'}
+  alt={item.title}
+  className="w-full h-80 object-cover rounded-xl"
+/>
                           <div className="absolute top-4 right-4 bg-white rounded-full p-2">
                             <Heart className="text-red-500" size={20} />
                           </div>
@@ -177,10 +132,10 @@ const Home = () => {
                               <Heart size={16} />
                               {item.likes} likes
                             </div>
-                            <div className="flex items-center gap-1">
-                              <Star size={16} className="text-yellow-500" />
-                              {item.owner.rating}
-                            </div>
+                           <div className="flex items-center gap-1">
+  <Star size={16} className="text-yellow-500" />
+  {item.owner && item.owner.rating ? item.owner.rating : 'N/A'}
+</div>
                           </div>
                           <div className="flex items-center justify-between">
                             <div className="text-2xl font-bold text-yellow-600">
