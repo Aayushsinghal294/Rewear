@@ -24,7 +24,7 @@ const isAdminRoute = useLocation().pathname.startsWith('/admin')
         <Route path="/browse" element={<Browse/>} />
         <Route path="/swaps" element={<MySwaps/>} />
         <Route path="/list-item" element={<ListItem/>} />
-        <Route path="/item/:id" element={<ItemDetail/>} />
+        <Route path="/items/:id" element={<ItemDetail/>} />
       </Routes>
     </>
   )
