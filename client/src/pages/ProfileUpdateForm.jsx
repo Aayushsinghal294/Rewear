@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { userAPI } from '../services/api';
 import { Upload, User, MapPin, Camera, Save, AlertCircle, CheckCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const CLOUDINARY_UPLOAD_PRESET = 'clothList'; // Your Cloudinary preset
 const CLOUDINARY_CLOUD_NAME = 'dora42wml';    // Your Cloudinary cloud name
@@ -18,7 +19,7 @@ const ProfileUpdateForm = ({ onUpdated }) => {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
+const navigate = useNavigate();
   
 
   // Upload image to Cloudinary and return the URL
@@ -203,8 +204,8 @@ const ProfileUpdateForm = ({ onUpdated }) => {
               {/* Submit Button */}
               <div className="pt-4">
                 <button
-                  type="submit"
-                  disabled={isLoading}
+                  onClick={() => navigate('/dashboard')}
+                 
                   className="w-full bg-gradient-to-r from-yellow-600 to-teal-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:from-yellow-700 hover:to-teal-700 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (

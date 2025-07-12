@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Heart, Eye, Star, X, ChevronDown } from 'lucide-react';
 import { itemAPI } from '../services/api';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import { toast } from 'react-toastify';
 const Browse = () => {
@@ -12,6 +12,7 @@ const Browse = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [userListings, setUserListings] = useState([]);
   const [selectedSwapItem, setSelectedSwapItem] = useState(null);
+    const navigate = useNavigate();
 
   const [filters, setFilters] = useState({
     category: '',
@@ -169,82 +170,85 @@ const Browse = () => {
   };
 
   const ItemCard = ({ item }) => (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <div className="relative">
-        <img
-          src={item.images && item.images.length > 0 ? item.images[0] : '/placeholder.jpg'}
-          alt={item.title}
-          className="w-full h-48 object-cover"
+  <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <div className="relative">
+      <img
+        src={item.images && item.images.length > 0 ? item.images[0] : '/placeholder.jpg'}
+        alt={item.title}
+        className="w-full h-48 object-cover"
+      />
+      <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md">
+        <Heart
+          size={16}
+          className={`${likedItems.includes(item._id) ? 'text-red-500 fill-current' : 'text-gray-400'} cursor-pointer`}
+          onClick={() => handleLikeClick(item._id)}
         />
-        <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md">
-          <Heart
-            size={16}
-            className={`${likedItems.includes(item._id) ? 'text-red-500 fill-current' : 'text-gray-400'} cursor-pointer`}
-            onClick={() => handleLikeClick(item._id)}
-          />
-        </div>
-        <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
-          {item.condition}
-        </div>
       </div>
-
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
-            {item.category}
-          </span>
-          <span className="text-xs text-gray-500">Size {item.size}</span>
-        </div>
-
-        <h3 className="font-semibold text-gray-800 mb-2 truncate">{item.title}</h3>
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>
-
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-2">
-           
-            <span className="text-sm text-gray-600">{item.owner && item.owner.username ? item.owner.username : 'Aayush'}</span>
-            <div className="flex items-center">
-              <Star size={12} className="text-yellow-500 fill-current" />
-              <span className="text-xs text-gray-500 ml-1">{item.owner && item.owner.rating ? item.owner.rating : '5.0'}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-3 text-xs text-gray-500">
-            <div className="flex items-center space-x-1">
-              <Eye size={12} />
-              <span>{item.views}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Heart size={12} />
-              <span>{item.likes.length}</span>
-            </div>
-          </div>
-          <div className="text-lg font-bold text-yellow-600">
-            {item.pointsValue} pts
-          </div>
-        </div>
-
-        <div className="flex space-x-2">
-          <Link
-            to={`/item/${item._id}`}
-            className="flex-1 bg-yellow-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-yellow-700 transition-colors text-center"
-          >
-            View Details
-          </Link>
-
-          <button
-            onClick={() => handleSwapClick(item)}
-            className="px-4 py-2 border border-yellow-600 text-yellow-600 rounded-lg text-sm font-medium hover:bg-yellow-50 transition-colors"
-          >
-            Swap
-          </button>
-        </div>
+      <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+        {item.condition}
       </div>
     </div>
-  );
 
+    <div className="p-4">
+      <div className="flex items-center justify-between mb-2">
+        <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+          {item.category}
+        </span>
+        <span className="text-xs text-gray-500">Size {item.size}</span>
+      </div>
+
+      <h3 className="font-semibold text-gray-800 mb-2 truncate">{item.title}</h3>
+      <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>
+
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-gray-600">{item.owner && item.owner.username ? item.owner.username : 'Aayush'}</span>
+          <div className="flex items-center">
+            <Star size={12} className="text-yellow-500 fill-current" />
+            <span className="text-xs text-gray-500 ml-1">{item.owner && item.owner.rating ? item.owner.rating : '5.0'}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center space-x-3 text-xs text-gray-500">
+          <div className="flex items-center space-x-1">
+            <Eye size={12} />
+            <span>{item.views}</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Heart size={12} />
+            <span>{item.likes.length}</span>
+          </div>
+        </div>
+        <div className="text-lg font-bold text-yellow-600">
+          {item.pointsValue} pts
+        </div>
+      </div>
+
+      <div className="flex space-x-2">
+        <Link
+          to={`/item/${item._id}`}
+          className="flex-1 bg-yellow-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-yellow-700 transition-colors text-center"
+        >
+          View Details
+        </Link>
+        <button
+          onClick={() => handleSwapClick(item)}
+          className="px-4 py-2 border border-yellow-600 text-yellow-600 rounded-lg text-sm font-medium hover:bg-yellow-50 transition-colors"
+        >
+          Swap
+        </button>
+        <button
+          onClick={() =>navigate(`/item/${item._id}`)}
+          className="px-4 py-2 border border-teal-600 text-teal-600 rounded-lg text-sm font-medium hover:bg-teal-50 transition-colors"
+        >
+          Redeem
+        </button>
+      </div>
+    </div>
+  </div>
+);
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -449,51 +453,53 @@ const Browse = () => {
         )}
       </div>
       {showSwapModal && selectedItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
-            <button
-              onClick={() => setShowSwapModal(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-gradient-to-br from-yellow-50 to-teal-50 rounded-2xl shadow-2xl max-w-md w-full p-8 relative border-2 border-yellow-200">
+      <button
+        onClick={() => setShowSwapModal(false)}
+        className="absolute top-3 right-3 text-gray-400 hover:text-yellow-600 transition-colors"
+      >
+        <X size={24} />
+      </button>
+      <h2 className="text-2xl font-bold mb-2 text-yellow-700 text-center">Propose a Swap</h2>
+      <p className="text-sm text-gray-600 mb-4 text-center">
+        You are proposing a swap for: <strong className="text-yellow-700">{selectedItem.title}</strong>
+      </p>
+      {userListings.length === 0 ? (
+        <p className="text-sm text-gray-500 text-center">You have no listings available for swap.</p>
+      ) : (
+        <div className="grid grid-cols-2 gap-4 max-h-64 overflow-y-auto px-2 mb-4">
+          {userListings.map((listing) => (
+            <div
+              key={listing._id}
+              className={`bg-white border-2 rounded-xl p-2 shadow-sm transition duration-200 cursor-pointer flex flex-col items-center
+                ${selectedSwapItem?._id === listing._id ? 'border-yellow-500 ring-2 ring-yellow-300' : 'hover:bg-yellow-50 border-gray-200'}`}
+              onClick={() => handleSelectSwapItem(listing)}
             >
-              <X size={20} />
-            </button>
-            <h2 className="text-lg font-bold mb-4">Propose a Swap</h2>
-            <p className="text-sm text-gray-600 mb-4">
-              You are proposing a swap for: <strong>{selectedItem.title}</strong>
-            </p>
-            {userListings.length === 0 ? (
-              <p className="text-sm text-gray-500">You have no listings available for swap.</p>
-            ) : (
-              <div className="grid grid-cols-2 gap-4 max-h-64 overflow-y-auto px-2">
-                {userListings.map((listing) => (
-                  <div
-                    key={listing._id}
-                    className={`bg-white border rounded-xl p-2 shadow-sm transition duration-200 cursor-pointer 
-              ${selectedSwapItem?._id === listing._id ? 'border-blue-500 ring-2 ring-blue-300' : 'hover:bg-gray-50'}`}
-                    onClick={() => handleSelectSwapItem(listing)}
-                  >
-                    <img
-                      src={listing.images[0]}
-                      alt={listing.title}
-                      className="w-full h-28 object-cover rounded-md"
-                    />
-                    <p className="text-sm font-semibold mt-2">{listing.title}</p>
-                  </div>
-
-                ))}
-              </div>
-
-            )}
-            <button
-              onClick={handleSubmitSwapRequest}
-              disabled={!selectedSwapItem}
-              className="mt-4 w-full bg-blue-600 text-white hover:bg-blue-700"
-            >
-              Send Swap Request
-            </button>
-          </div>
+              <img
+                src={listing.images[0]}
+                alt={listing.title}
+                className="w-full h-24 object-cover rounded-md mb-2"
+              />
+              <p className="text-xs font-semibold text-center">{listing.title}</p>
+            </div>
+          ))}
         </div>
       )}
+      <button
+        onClick={() => navigate('/')}
+        disabled={!selectedSwapItem}
+        className={`mt-4 w-full py-3 rounded-lg font-bold transition-colors text-lg
+          ${selectedSwapItem
+            ? 'bg-yellow-600 text-white hover:bg-yellow-700'
+            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+          }`}
+      >
+        Send Swap Request
+      </button>
+    </div>
+  </div>
+)}
 
     </div>
   );

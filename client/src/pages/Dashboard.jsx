@@ -62,7 +62,7 @@ const Dashboard = () => {
           <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg rounded-3xl shadow-xl border-2 border-yellow-300 p-8 flex flex-col items-center gap-2 transition-all hover:scale-105">
             <TrendingUp className="text-yellow-500 mb-2" size={40} />
             <p className="text-lg text-zinc-700 dark:text-zinc-200">Points Balance</p>
-            <p className="text-3xl font-extrabold text-yellow-600 dark:text-yellow-400">{userData?.pointsBalance || 0}</p>
+            <p className="text-3xl font-extrabold text-yellow-600 dark:text-yellow-400">{userData?.pointsBalance || 500}</p>
           </div>
           <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg rounded-3xl shadow-xl border-2 border-blue-300 p-8 flex flex-col items-center gap-2 transition-all hover:scale-105">
             <Package className="text-blue-500 mb-2" size={40} />
@@ -72,7 +72,7 @@ const Dashboard = () => {
           <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg rounded-3xl shadow-xl border-2 border-emerald-300 p-8 flex flex-col items-center gap-2 transition-all hover:scale-105">
             <Star className="text-emerald-500 mb-2" size={40} />
             <p className="text-lg text-zinc-700 dark:text-zinc-200">Total Swaps</p>
-            <p className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">{userData?.totalSwaps || 0}</p>
+            <p className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">{userData?.totalSwaps || 3}</p>
           </div>
         </div>
 
