@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Heart, Eye, Star, X, ChevronDown } from 'lucide-react';
 import { itemAPI } from '../services/api';
+import { Link } from 'react-router-dom';
 
 const Browse = () => {
   const [items, setItems] = useState([]);
@@ -93,11 +94,11 @@ useEffect(() => {
   const ItemCard = ({ item }) => (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative">
-        <img
-          src={item.images[0]}
-          alt={item.title}
-          className="w-full h-48 object-cover"
-        />
+         <img
+    src={item.images && item.images.length > 0 ? item.images[0] : '/placeholder.jpg'}
+    alt={item.title}
+    className="w-full h-48 object-cover"
+  />
         <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md">
           <Heart 
             size={16} 
@@ -123,14 +124,14 @@ useEffect(() => {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <img
-              src={item.owner.profileImage}
-              alt={item.owner.username}
+              src={item.owner && item.owner.profileImage ? item.owner.profileImage : '/avatar.png'}
+              alt={item.owner && item.owner.username ? item.owner.username : 'User'}
               className="w-6 h-6 rounded-full"
             />
-            <span className="text-sm text-gray-600">{item.owner.username}</span>
+            <span className="text-sm text-gray-600">{item.owner && item.owner.username ? item.owner.username : 'User'}</span>
             <div className="flex items-center">
               <Star size={12} className="text-yellow-500 fill-current" />
-              <span className="text-xs text-gray-500 ml-1">{item.owner.rating}</span>
+              <span className="text-xs text-gray-500 ml-1">{item.owner && item.owner.rating ? item.owner.rating : '5.0'}</span>
             </div>
           </div>
         </div>
