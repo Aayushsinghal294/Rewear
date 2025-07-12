@@ -14,7 +14,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-yellow-200/80 via-white/80 to-yellow-100/80 backdrop-blur-lg shadow-xl px-6 py-4 md:px-12 border-b border-yellow-100">
       <div className="flex justify-between items-center max-w-7xl mx-auto">
         <Link to="/">
-          <img src={assets.logo} alt="ReWear Logo" className="w-40 h-auto drop-shadow-lg hover:scale-105 transition-transform duration-300" />
+          <img src={assets.logo} alt="ReWear Logo" className="w-20 h-auto drop-shadow-lg hover:scale-105 transition-transform duration-300" />
         </Link>
 
         {/* Desktop Nav */}
