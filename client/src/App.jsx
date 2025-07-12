@@ -8,7 +8,7 @@ import Browse from './pages/Browse'
 import MySwaps from './pages/MySwaps'
 import ListItem from './pages/ListItem'
 import ItemDetail from './pages/ItemDetail'
-import ProfileUpdateForm from './pages/ProfileUpdateForm'
+import ProfileUpdateForm from './pages/ProfileUpdateForm.jsx'
 
 const App = () => {
 
