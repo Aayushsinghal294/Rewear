@@ -88,35 +88,16 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Create new item
 router.post('/', async (req, res) => {
   try {
-    const itemData = req.body;
-    
-    // Validate required fields
-    const requiredFields = ['title', 'description', 'category', 'size', 'condition', 'type', 'pointsValue', 'owner'];
-    for (const field of requiredFields) {
-      if (!itemData[field]) {
-        return res.status(400).json({ error: `${field} is required` });
-      }
-    }
-    
-    // Validate user exists
-    const user = await User.findOne({ clerkId: itemData.owner });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    const item = new Item(itemData);
+    const item = new Item(req.body);
     await item.save();
-    
-    console.log('✅ New item created:', item.title);
     res.status(201).json(item);
-  } catch (error) {
-    console.error('❌ Create item error:', error);
-    res.status(400).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
+
 
 // Get user's items
 router.get('/user/:clerkId', async (req, res) => {

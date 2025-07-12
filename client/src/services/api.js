@@ -17,4 +17,5 @@ export const itemAPI = {
   getAllItems: (params) => api.get('/items', { params }),
   createItem: (itemData) => api.post('/items', itemData),
   getUserItems: (clerkId) => api.get(`/items/user/${clerkId}`),
+  getItemById: (id) => api.get(`/items/${id}`), // <-- Add this
 };
