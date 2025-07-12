@@ -1,97 +1,287 @@
-// pages/Home.jsx
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowRight, Recycle, Users, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, Users, Shirt, Recycle, ArrowRight, Heart, Eye } from 'lucide-react';
 
-const HeroSection = () => {
+const Home = () => {
   const [featuredItems, setFeaturedItems] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [loading, setLoading] = useState(true);
 
+  // Mock featured items data - replace with actual API call
   useEffect(() => {
-    // Fetch featured items from API
-    fetchFeaturedItems();
+    const mockItems = [
+      {
+        id: 1,
+        title: "Vintage Denim Jacket",
+        description: "Classic blue denim jacket in excellent condition",
+        category: "outerwear",
+        size: "M",
+        condition: "Like New",
+        pointsValue: 150,
+        images: ["https://images.unsplash.com/photo-1544966503-7cc5ac882d5e?w=400"],
+        owner: { username: "fashionista", rating: 4.8 },
+        likes: 12,
+        views: 45
+      },
+      {
+        id: 2,
+        title: "Floral Summer Dress",
+        description: "Beautiful floral print dress perfect for summer",
+        category: "dresses",
+        size: "S",
+        condition: "Good",
+        pointsValue: 120,
+        images: ["https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400"],
+        owner: { username: "summergirl", rating: 4.9 },
+        likes: 8,
+        views: 32
+      },
+      {
+        id: 3,
+        title: "Designer Sneakers",
+        description: "Limited edition sneakers, barely worn",
+        category: "shoes",
+        size: "9",
+        condition: "Like New",
+        pointsValue: 200,
+        images: ["https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400"],
+        owner: { username: "sneakerhead", rating: 5.0 },
+        likes: 24,
+        views: 78
+      },
+      {
+        id: 4,
+        title: "Cozy Knit Sweater",
+        description: "Soft wool sweater in neutral beige",
+        category: "tops",
+        size: "L",
+        condition: "Good",
+        pointsValue: 80,
+        images: ["https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400"],
+        owner: { username: "cozyfashion", rating: 4.7 },
+        likes: 15,
+        views: 56
+      }
+    ];
+    
+    setTimeout(() => {
+      setFeaturedItems(mockItems);
+      setLoading(false);
+    }, 1000);
   }, []);
 
-  const fetchFeaturedItems = async () => {
-    try {
-      const response = await fetch('/api/items?limit=6');
-      const data = await response.json();
-      setFeaturedItems(data);
-    } catch (error) {
-      console.error('Error fetching featured items:', error);
-    }
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % featuredItems.length);
   };
 
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + featuredItems.length) % featuredItems.length);
+  };
+
+  const stats = [
+    { icon: Users, label: "Active Users", value: "2.5K+" },
+    { icon: Shirt, label: "Items Swapped", value: "8.2K+" },
+    { icon: Recycle, label: "CO2 Saved", value: "1.2T" },
+    { icon: Star, label: "Avg Rating", value: "4.8" }
+  ];
+
   return (
-    <div className="pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-teal-50 mt-25">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-yellow-100 to-yellow-200 py-20">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h1 className="text-5xl font-bold text-gray-800 mb-6">
-            Swap, Share, Sustain with <span className="text-yellow-600">ReWear</span>
+      <section className="relative px-4 py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/10 to-teal-600/10"></div>
+        <div className="relative max-w-6xl mx-auto text-center">
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-6">
+            Give Your Clothes a
+            <span className="text-yellow-600 block">Second Life</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Give your unused clothes a new life. Join our community of conscious fashion lovers.
+            Join the sustainable fashion revolution. Swap, trade, and discover amazing pre-loved clothing while reducing textile waste.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/browse" className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105">
-              Start Browsing <ArrowRight className="inline ml-2" size={20} />
-            </Link>
-            <Link to="/list-item" className="bg-white hover:bg-gray-50 text-yellow-600 px-8 py-3 rounded-full font-semibold border-2 border-yellow-500 transition-all duration-300 hover:scale-105">
-              List Your Item
-            </Link>
+            <button className="bg-yellow-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-yellow-700 transition-colors flex items-center justify-center gap-2">
+              Start Swapping
+              <ArrowRight size={20} />
+            </button>
+            <button className="border-2 border-yellow-600 text-yellow-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-yellow-50 transition-colors">
+              List an Item
+            </button>
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
       <section className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="flex flex-col items-center">
-              <Recycle className="text-yellow-500 mb-4" size={48} />
-              <h3 className="text-3xl font-bold text-gray-800">1,234</h3>
-              <p className="text-gray-600">Items Swapped</p>
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mb-4">
+                  <stat.icon className="text-yellow-600" size={32} />
+                </div>
+                <div className="text-3xl font-bold text-gray-800 mb-2">{stat.value}</div>
+                <div className="text-gray-600">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Items Carousel */}
+      <section className="py-16">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+            Featured Items
+          </h2>
+          
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600"></div>
             </div>
-            <div className="flex flex-col items-center">
-              <Users className="text-yellow-500 mb-4" size={48} />
-              <h3 className="text-3xl font-bold text-gray-800">567</h3>
-              <p className="text-gray-600">Happy Members</p>
+          ) : (
+            <div className="relative">
+              <div className="overflow-hidden rounded-2xl">
+                <div
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                >
+                  {featuredItems.map((item) => (
+                    <div key={item.id} className="w-full flex-shrink-0">
+                      <div className="grid md:grid-cols-2 gap-8 items-center bg-white rounded-2xl p-8 mx-4">
+                        <div className="relative">
+                          <img
+                            src={item.images[0]}
+                            alt={item.title}
+                            className="w-full h-80 object-cover rounded-xl"
+                          />
+                          <div className="absolute top-4 right-4 bg-white rounded-full p-2">
+                            <Heart className="text-red-500" size={20} />
+                          </div>
+                        </div>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2">
+                            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                              {item.category}
+                            </span>
+                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                              Size {item.size}
+                            </span>
+                          </div>
+                          <h3 className="text-2xl font-bold text-gray-800">{item.title}</h3>
+                          <p className="text-gray-600">{item.description}</p>
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
+                            <div className="flex items-center gap-1">
+                              <Eye size={16} />
+                              {item.views} views
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Heart size={16} />
+                              {item.likes} likes
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Star size={16} className="text-yellow-500" />
+                              {item.owner.rating}
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="text-2xl font-bold text-yellow-600">
+                              {item.pointsValue} points
+                            </div>
+                            <button className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition-colors">
+                              View Details
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Navigation Buttons */}
+              <button
+                onClick={prevSlide}
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-shadow"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                onClick={nextSlide}
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-shadow"
+              >
+                <ChevronRight size={24} />
+              </button>
+              
+              {/* Dots Indicator */}
+              <div className="flex justify-center mt-8 space-x-2">
+                {featuredItems.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      index === currentSlide ? 'bg-yellow-600' : 'bg-gray-300'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
-            <div className="flex flex-col items-center">
-              <Star className="text-yellow-500 mb-4" size={48} />
-              <h3 className="text-3xl font-bold text-gray-800">4.8</h3>
-              <p className="text-gray-600">Average Rating</p>
+          )}
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+            How ReWear Works
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-yellow-600">1</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">List Your Items</h3>
+              <p className="text-gray-600">
+                Upload photos and details of clothes you no longer wear. Set your preferred swap method.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-yellow-600">2</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Browse & Swap</h3>
+              <p className="text-gray-600">
+                Discover amazing items from other users. Make direct swaps or use points to redeem items.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-yellow-600">3</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Enjoy & Repeat</h3>
+              <p className="text-gray-600">
+                Receive your new-to-you items and continue the cycle of sustainable fashion.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Items */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-            Featured Items
+      {/* CTA Section */}
+      <section className="py-16 bg-gradient-to-r from-yellow-600 to-teal-600">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Ready to Start Your Sustainable Fashion Journey?
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredItems.map((item) => (
-              <div key={item._id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                <img 
-                  src={item.images[0] || '/placeholder-image.jpg'} 
-                  alt={item.title}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
-                  <p className="text-gray-600 text-sm mb-4">{item.description.substring(0, 80)}...</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-yellow-600 font-bold">{item.pointsValue} points</span>
-                    <Link to={`/item/${item._id}`} className="text-yellow-600 hover:text-yellow-700 font-semibold">
-                      View Details
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <p className="text-xl text-yellow-100 mb-8">
+            Join thousands of users who are already making a difference, one swap at a time.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="bg-white text-yellow-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
+              Browse Items
+            </button>
+            <button className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-yellow-600 transition-colors">
+              List Your First Item
+            </button>
           </div>
         </div>
       </section>
@@ -99,4 +289,4 @@ const HeroSection = () => {
   );
 };
 
-export default HeroSection;
+export default Home;
