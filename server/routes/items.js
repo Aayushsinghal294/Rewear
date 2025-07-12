@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Item = require('../models/Item');
 const User = require('../models/User');
-
-// Get all items with filtering and pagination
 router.get('/', async (req, res) => {
   try {
     const { 
@@ -18,10 +16,14 @@ router.get('/', async (req, res) => {
       sortBy = 'createdAt',
       sortOrder = 'desc'
     } = req.query;
-    
+
+    // Convert page and limit to numbers
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 12;
+
     // Build query
     let query = { status: 'available' };
-    
+
     if (category) query.category = category;
     if (size) query.size = size;
     if (condition) query.condition = condition;
@@ -30,7 +32,7 @@ router.get('/', async (req, res) => {
       if (minPoints) query.pointsValue.$gte = parseInt(minPoints);
       if (maxPoints) query.pointsValue.$lte = parseInt(maxPoints);
     }
-    
+
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -38,28 +40,27 @@ router.get('/', async (req, res) => {
         { tags: { $in: [new RegExp(search, 'i')] } }
       ];
     }
-    
+
     // Build sort
     const sort = {};
     sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
-    
+
     // Execute query with pagination
-    const items = await Item.find(query)
-      .sort(sort)
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .populate('owner', 'username rating profileImage');
-    
+  const items = await Item.find(query)
+  .sort(sort)
+  .limit(limitNum)
+  .skip((pageNum - 1) * limitNum);
+
     const total = await Item.countDocuments(query);
-    
+
     res.json({
       items,
       pagination: {
-        currentPage: parseInt(page),
-        totalPages: Math.ceil(total / limit),
+        currentPage: pageNum,
+        totalPages: Math.ceil(total / limitNum),
         totalItems: total,
-        hasNext: page < Math.ceil(total / limit),
-        hasPrev: page > 1
+        hasNext: pageNum < Math.ceil(total / limitNum),
+        hasPrev: pageNum > 1
       }
     });
   } catch (error) {
