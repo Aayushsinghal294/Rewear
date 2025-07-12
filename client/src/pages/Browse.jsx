@@ -157,6 +157,17 @@ const Browse = () => {
     });
   };
 
+  const [likedItems, setLikedItems] = useState([]);
+
+  const handleLikeClick = (itemId) => {
+    setLikedItems((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId]
+    );
+    // Optionally, send like/unlike to backend here
+  };
+
   const ItemCard = ({ item }) => (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative">
@@ -168,7 +179,8 @@ const Browse = () => {
         <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md">
           <Heart
             size={16}
-            className={`${item.likes.includes(1) ? 'text-red-500 fill-current' : 'text-gray-400'} cursor-pointer`}
+            className={`${likedItems.includes(item._id) ? 'text-red-500 fill-current' : 'text-gray-400'} cursor-pointer`}
+            onClick={() => handleLikeClick(item._id)}
           />
         </div>
         <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
@@ -189,12 +201,8 @@ const Browse = () => {
 
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
-            <img
-              src={item.owner && item.owner.profileImage ? item.owner.profileImage : '/avatar.png'}
-              alt={item.owner && item.owner.username ? item.owner.username : 'User'}
-              className="w-6 h-6 rounded-full"
-            />
-            <span className="text-sm text-gray-600">{item.owner && item.owner.username ? item.owner.username : 'User'}</span>
+           
+            <span className="text-sm text-gray-600">{item.owner && item.owner.username ? item.owner.username : 'Aayush'}</span>
             <div className="flex items-center">
               <Star size={12} className="text-yellow-500 fill-current" />
               <span className="text-xs text-gray-500 ml-1">{item.owner && item.owner.rating ? item.owner.rating : '5.0'}</span>

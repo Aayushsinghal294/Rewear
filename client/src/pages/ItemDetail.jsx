@@ -101,13 +101,9 @@ const ItemDetails = () => {
 
             {/* Owner Card */}
             <div className="mt-8 flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-yellow-100 via-orange-50 to-emerald-100 dark:from-zinc-800 dark:via-zinc-900 dark:to-emerald-950 shadow-lg border border-yellow-200 dark:border-emerald-700">
-              <img
-                src={item.owner?.profileImage || '/avatar.png'}
-                alt={item.owner?.username || 'User'}
-                className="w-14 h-14 rounded-full border-2 border-emerald-300 shadow"
-              />
+            
               <div>
-                <div className="font-bold text-lg text-yellow-800 dark:text-yellow-200">{item.owner?.username || 'User'}</div>
+                <div className="font-bold text-lg text-yellow-800 dark:text-yellow-200">{item.owner?.username || 'Aayush'}</div>
                 <div className="text-xs text-zinc-500 dark:text-zinc-300">Rating: <span className="font-semibold">{item.owner?.rating || '5.0'}</span></div>
               </div>
             </div>
