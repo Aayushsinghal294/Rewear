@@ -2,10 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter, Heart, Eye, Star, X, ChevronDown } from 'lucide-react';
 import { itemAPI } from '../services/api';
 import { Link } from 'react-router-dom';
-
+import { useUser } from '@clerk/clerk-react';
+import { toast } from 'react-toastify';
 const Browse = () => {
+  const { user } = useUser();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showSwapModal, setShowSwapModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [userListings, setUserListings] = useState([]);
+  const [selectedSwapItem, setSelectedSwapItem] = useState(null);
+
   const [filters, setFilters] = useState({
     category: '',
     size: '',
@@ -19,16 +26,30 @@ const Browse = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({});
+  useEffect(() => {
+    const fetchUserListings = async () => {
+      if (!user || !showSwapModal) return;
 
-useEffect(() => {
-  setLoading(true);
-  itemAPI.getAllItems({ ...filters, sortBy, sortOrder, page: currentPage })
-    .then(res => {
-      setItems(res.data.items);
-      setPagination(res.data.pagination);
-    })
-    .finally(() => setLoading(false));
-}, [filters, sortBy, sortOrder, currentPage]);
+      try {
+        const response = await fetch(`http://localhost:5000/api/items/user/${user.id}`);
+        const data = await response.json();
+        setUserListings(data);
+      } catch (error) {
+        console.error("Failed to fetch user listings:", error);
+      }
+    };
+
+    fetchUserListings();
+  }, [user, showSwapModal]);
+  useEffect(() => {
+    setLoading(true);
+    itemAPI.getAllItems({ ...filters, sortBy, sortOrder, page: currentPage })
+      .then(res => {
+        setItems(res.data.items);
+        setPagination(res.data.pagination);
+      })
+      .finally(() => setLoading(false));
+  }, [filters, sortBy, sortOrder, currentPage]);
 
   const categories = [
     { value: '', label: 'All Categories' },
@@ -79,6 +100,43 @@ useEffect(() => {
       setSortOrder('desc');
     }
   };
+  const handleSwapClick = (item) => {
+    setSelectedItem(item);
+    setShowSwapModal(true);
+  };
+  const handleSubmitSwapRequest = async () => {
+    if (!selectedSwapItem) {
+      alert("Please select an item to swap.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/swaps/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          targetItemId: selectedItem._id,       // The item you're trying to get
+          offeredItemId: selectedSwapItem._id,  // Your item you're offering
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to send swap request");
+      }
+
+      toast.success("Swap request sent!");
+      // setIsSwapModalOpen(false); // Close modal if using one
+      setSelectedSwapItem(null); // Reset selection
+    } catch (err) {
+      console.error("Swap request error:", err);
+      toast.error(err.message || "Something went wrong.");
+    }
+  };
+
 
   const clearFilters = () => {
     setFilters({
@@ -90,18 +148,26 @@ useEffect(() => {
       search: ''
     });
   };
+  const handleSelectSwapItem = (myItem) => {
+    // For now, just log what was selected — sending the request is the next step
+    setSelectedSwapItem(myItem);
+    console.log("Proposing swap:", {
+      yourItem: myItem,
+      targetItem: selectedItem,
+    });
+  };
 
   const ItemCard = ({ item }) => (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative">
-         <img
-    src={item.images && item.images.length > 0 ? item.images[0] : '/placeholder.jpg'}
-    alt={item.title}
-    className="w-full h-48 object-cover"
-  />
+        <img
+          src={item.images && item.images.length > 0 ? item.images[0] : '/placeholder.jpg'}
+          alt={item.title}
+          className="w-full h-48 object-cover"
+        />
         <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md">
-          <Heart 
-            size={16} 
+          <Heart
+            size={16}
             className={`${item.likes.includes(1) ? 'text-red-500 fill-current' : 'text-gray-400'} cursor-pointer`}
           />
         </div>
@@ -109,7 +175,7 @@ useEffect(() => {
           {item.condition}
         </div>
       </div>
-      
+
       <div className="p-4">
         <div className="flex items-center justify-between mb-2">
           <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
@@ -117,10 +183,10 @@ useEffect(() => {
           </span>
           <span className="text-xs text-gray-500">Size {item.size}</span>
         </div>
-        
+
         <h3 className="font-semibold text-gray-800 mb-2 truncate">{item.title}</h3>
         <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>
-        
+
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <img
@@ -135,7 +201,7 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-3 text-xs text-gray-500">
             <div className="flex items-center space-x-1">
@@ -151,16 +217,19 @@ useEffect(() => {
             {item.pointsValue} pts
           </div>
         </div>
-        
-        <div className="flex space-x-2">
-         <Link
-  to={`/items/${item._id}`}
-  className="flex-1 bg-yellow-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-yellow-700 transition-colors text-center"
->
-  View Details
-</Link>
 
-          <button className="px-4 py-2 border border-yellow-600 text-yellow-600 rounded-lg text-sm font-medium hover:bg-yellow-50 transition-colors">
+        <div className="flex space-x-2">
+          <Link
+            to={`/items/${item._id}`}
+            className="flex-1 bg-yellow-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-yellow-700 transition-colors text-center"
+          >
+            View Details
+          </Link>
+
+          <button
+            onClick={() => handleSwapClick(item)}
+            className="px-4 py-2 border border-yellow-600 text-yellow-600 rounded-lg text-sm font-medium hover:bg-yellow-50 transition-colors"
+          >
             Swap
           </button>
         </div>
@@ -292,31 +361,28 @@ useEffect(() => {
             <span className="text-sm text-gray-600 mr-2">Sort by:</span>
             <button
               onClick={() => handleSortChange('createdAt')}
-              className={`px-3 py-1 rounded-full text-sm ${
-                sortBy === 'createdAt' 
-                  ? 'bg-yellow-600 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+              className={`px-3 py-1 rounded-full text-sm ${sortBy === 'createdAt'
+                ? 'bg-yellow-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
             >
               Latest {sortBy === 'createdAt' && (sortOrder === 'asc' ? '↑' : '↓')}
             </button>
             <button
               onClick={() => handleSortChange('pointsValue')}
-              className={`px-3 py-1 rounded-full text-sm ${
-                sortBy === 'pointsValue' 
-                  ? 'bg-yellow-600 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+              className={`px-3 py-1 rounded-full text-sm ${sortBy === 'pointsValue'
+                ? 'bg-yellow-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
             >
               Points {sortBy === 'pointsValue' && (sortOrder === 'asc' ? '↑' : '↓')}
             </button>
             <button
               onClick={() => handleSortChange('views')}
-              className={`px-3 py-1 rounded-full text-sm ${
-                sortBy === 'views' 
-                  ? 'bg-yellow-600 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+              className={`px-3 py-1 rounded-full text-sm ${sortBy === 'views'
+                ? 'bg-yellow-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
             >
               Popular {sortBy === 'views' && (sortOrder === 'asc' ? '↑' : '↓')}
             </button>
@@ -346,11 +412,11 @@ useEffect(() => {
                 >
                   Previous
                 </button>
-                
+
                 <span className="px-4 py-2 text-sm text-gray-600">
                   Page {pagination.currentPage} of {pagination.totalPages}
                 </span>
-                
+
                 <button
                   disabled={!pagination.hasNext}
                   onClick={() => setCurrentPage(prev => prev + 1)}
@@ -374,6 +440,53 @@ useEffect(() => {
           </div>
         )}
       </div>
+      {showSwapModal && selectedItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
+            <button
+              onClick={() => setShowSwapModal(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-lg font-bold mb-4">Propose a Swap</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              You are proposing a swap for: <strong>{selectedItem.title}</strong>
+            </p>
+            {userListings.length === 0 ? (
+              <p className="text-sm text-gray-500">You have no listings available for swap.</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 max-h-64 overflow-y-auto px-2">
+                {userListings.map((listing) => (
+                  <div
+                    key={listing._id}
+                    className={`bg-white border rounded-xl p-2 shadow-sm transition duration-200 cursor-pointer 
+              ${selectedSwapItem?._id === listing._id ? 'border-blue-500 ring-2 ring-blue-300' : 'hover:bg-gray-50'}`}
+                    onClick={() => handleSelectSwapItem(listing)}
+                  >
+                    <img
+                      src={listing.images[0]}
+                      alt={listing.title}
+                      className="w-full h-28 object-cover rounded-md"
+                    />
+                    <p className="text-sm font-semibold mt-2">{listing.title}</p>
+                  </div>
+
+                ))}
+              </div>
+
+            )}
+            <button
+              onClick={handleSubmitSwapRequest}
+              disabled={!selectedSwapItem}
+              className="mt-4 w-full bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Send Swap Request
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
