@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { Package, Star, TrendingUp, Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Package, Star, TrendingUp, Plus, User } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const { user } = useUser();
   const [userData, setUserData] = useState(null);
   const [userItems, setUserItems] = useState([]);
+   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -36,8 +37,18 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-yellow-100 via-orange-50 to-emerald-50 dark:from-[#18181B] dark:via-[#23272A] dark:to-[#0f2027] pt-24 pb-12">
-      {/* Animated background blobs for subtle depth */}
+      <div className="relative min-h-screen bg-gradient-to-br from-yellow-100 via-orange-50 to-emerald-50 dark:from-[#18181B] dark:via-[#23272A] dark:to-[#0f2027] pt-24 pb-12">
+      {/* Profile Button */}
+      <div className="absolute top-6 right-8 z-20 mt-50">
+        <button
+          onClick={() => navigate('/profile')}
+          className="flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white px-5 py-2 rounded-full shadow-lg font-semibold transition-all"
+        >
+          <User size={20} />
+          Profile
+        </button>
+      </div>
+       {/* Animated background blobs for subtle depth */}
       <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 bg-yellow-200 opacity-25 rounded-full blur-3xl animate-blob"></div>
       <div className="pointer-events-none absolute -bottom-32 -right-32 w-96 h-96 bg-emerald-200 opacity-25 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
 

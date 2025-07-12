@@ -8,6 +8,7 @@ import Browse from './pages/Browse'
 import MySwaps from './pages/MySwaps'
 import ListItem from './pages/ListItem'
 import ItemDetail from './pages/ItemDetail'
+import ProfileUpdateForm from './pages/ProfileUpdateForm'
 
 const App = () => {
 
@@ -24,7 +25,8 @@ const isAdminRoute = useLocation().pathname.startsWith('/admin')
         <Route path="/browse" element={<Browse/>} />
         <Route path="/swaps" element={<MySwaps/>} />
         <Route path="/list-item" element={<ListItem/>} />
-        <Route path="/items/:id" element={<ItemDetail/>} />
+        <Route path="/item/:id" element={<ItemDetail/>} />
+        <Route path="/profile" element={<ProfileUpdateForm/>} />
       </Routes>
     </>
   )
